@@ -1,0 +1,25 @@
+{
+  "name": "bienesraices_mvc",
+  "version": "1.0.0",
+  "description": "Mi primer proyecto con nodejs vamos que se puede por la csm!!!",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "css": "postcss public/css/tailwind.css -o public/css/app.css --watch"
+  },
+  "author": "Y4kvb3ts",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "pug": "^3.0.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "nodemon": "^2.0.22",
+    "postcss": "^8.4.23",
+    "postcss-cli": "^10.1.0",
+    "tailwindcss": "^3.3.2"
+  }
+}

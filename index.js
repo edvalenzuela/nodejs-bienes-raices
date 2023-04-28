@@ -1,9 +1,18 @@
 //const express = require('express')
 import express from 'express'
 import usuarioRoutes from './routes/usuarioRoutes.js'
+import db from './config/db.js'
 
 //Crear la APP
 const app = express()
+
+// Conexión a la base de datos
+try {
+  await db.authenticate();
+  console.log('Conexión correcta a la DB')
+} catch (error) {
+  console.log(error)
+}
 
 //Habilitar Pug
 app.set('view engine', 'pug')

@@ -2,7 +2,7 @@ import express from 'express'
 import csurf from 'csurf'
 import cookieParser from 'cookie-parser'
 import usuarioRoutes from './routes/usuarioRoutes.js'
-import db from './config/db.js'
+import { connectDB } from './config/db.js'
 
 //Crear la APP
 const app = express()
@@ -16,14 +16,7 @@ app.use(cookieParser())
 // Habilitar CSRF
 app.use(csurf({cookie: true}))
 
-// Conexión a la base de datos
-try {
-  await db.authenticate();
-  db.sync()
-  console.log('Conexión correcta a la DB')
-} catch (error) {
-  console.log(error)
-}
+await connectDB();
 
 //Habilitar Pug
 app.set('view engine', 'pug')
@@ -39,5 +32,5 @@ app.use('/auth', usuarioRoutes)
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-  console.log(`Èl servidor esta funcionando en el puerto ${port}`)
+  console.log(`El servidor esta funcionando en el puerto ${port}`)
 })

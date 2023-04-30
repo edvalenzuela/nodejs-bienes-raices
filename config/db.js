@@ -18,4 +18,15 @@ const db = new Sequelize(process.env.BD_NOMBRE, process.env.BD_USER, process.env
   operatorAliases: false
 });
 
-export default db;
+const connectDB = async() => {
+  // Conexión a la base de datos
+  try {
+    await db.authenticate();
+    db.sync()
+    console.log('Conexión correcta a la DB')
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export { db,connectDB };

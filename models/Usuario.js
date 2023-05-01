@@ -23,6 +23,14 @@ const Usuario = db.define('usuarios', {
       const salt = await bcrypt.genSalt(10)
       usuario.password = await bcrypt.hash(usuario.password, salt);
     }
+  },
+  //eliminar ciertos campos para consultar un modelo en especifico
+  scopes:{
+    eliminarPassword:{
+      attributes:{
+        exclude:['password', 'token', 'confirmado', 'createdAt', 'updatedAt']
+      }
+    }
   }
 })
 

@@ -147,10 +147,102 @@ const almacenarImagen = async(req, res, next) => {
   }
 }
 
+const editar = async(req, res)=>{
+
+  const { id } = req.params;
+
+  //validar que la propiedad exista
+  const propiedad = await Propiedad.findByPk(id)
+
+  if(!propiedad){
+    return res.redirect('/mis-propiedades')
+  }
+
+  //revisar quien visita la URL , es quien creo la propiedad
+  if(propiedad.usuarioId.toString() !== req.usuario.id.toString()){
+    return res.redirect('/mis-propiedades')
+  }
+
+  const [categorias, precios] = await Promise.all([
+    Categoria.findAll(),
+    Precio.findAll()
+  ])
+
+  res.render('propiedades/editar', {
+    pagina: `Editar propiedad: ${propiedad.titulo}`,
+    csrfToken: req.csrfToken(),
+    categorias,
+    precios,
+    datos: propiedad
+  })
+}
+
+const guardarCambios = async(req, res) => {
+
+  //verificar la validacion
+  let resultado = validationResult(req);
+
+  if(!resultado.isEmpty()){
+    //consultar modelo de precio y categorias
+    const [categorias, precios] = await Promise.all([
+      Categoria.findAll(),
+      Precio.findAll()
+    ])
+
+    return res.render('propiedades/editar', {
+      pagina: 'Editar propiedad',
+      csrfToken: req.csrfToken(),
+      categorias,
+      precios,
+      errores: resultado.array(),
+      datos: req.body
+    })
+  }
+
+  const { id } = req.params;
+
+  //validar que la propiedad exista
+  const propiedad = await Propiedad.findByPk(id)
+
+  if(!propiedad){
+    return res.redirect('/mis-propiedades')
+  }
+
+  //revisar quien visita la URL , es quien creo la propiedad
+  if(propiedad.usuarioId.toString() !== req.usuario.id.toString()){
+    return res.redirect('/mis-propiedades')
+  }
+
+  //reescribir el objeto y actualizarlo
+  try {
+    const { titulo, descripcion, habitaciones, estacionamiento, wc, calle, lat, lng, precio:precioId, categoria: categoriaId } = req.body;
+    propiedad.set({
+      titulo, 
+      descripcion, 
+      habitaciones, 
+      estacionamiento, 
+      wc, 
+      calle, 
+      lat, 
+      lng, 
+      precio:precioId, 
+      categoria: categoriaId
+    })
+
+    await propiedad.save()
+    res.redirect('/mis-propiedades')
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export {
   admin,
   crear,
   guardar,
   agregarImagen,
-  almacenarImagen
+  almacenarImagen,
+  editar,
+  guardarCambios
 }

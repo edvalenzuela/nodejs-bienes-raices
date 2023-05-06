@@ -4,23 +4,55 @@ import { Precio, Categoria, Propiedad } from '../models/index.js'
 
 const admin = async(req, res) => {
 
-  const { id } = req.usuario
+  // leer querystring
+  const { pagina:paginaActual } = req.query;
+  const expresion = /^[0-9]$/ //iniciar con digitos y terminar con digitos
 
-  const propiedades = await Propiedad.findAll({
-    where: {
-      usuarioId: id
-    },
-    include: [
-      { model: Categoria, as: 'categoria' },
-      { model: Precio, as: 'precio' }
-    ]
-  })
+  if(!expresion.test(paginaActual)){
+    return res.redirect('/mis-propiedades?pagina=1')
+  }
 
-  res.render('propiedades/admin', {
-    pagina: 'Mis propiedades',
-    propiedades,
-    csrfToken: req.csrfToken()
-  })
+  try {
+    const { id } = req.usuario
+
+    //limites y offset para el paginador
+    const limit = 10
+    const offset = ((paginaActual*limit) - limit)
+  
+    const [propiedades, total] = await Promise.all([
+      Propiedad.findAll({
+        limit,
+        offset,
+        where: {
+          usuarioId: id
+        },
+        include: [
+          { model: Categoria, as: 'categoria' },
+          { model: Precio, as: 'precio' }
+        ]
+      }),
+      Propiedad.count({
+        where: {
+          usuarioId: id
+        }
+      })
+    ])
+    
+    res.render('propiedades/admin', {
+      pagina: 'Mis propiedades',
+      propiedades,
+      csrfToken: req.csrfToken(),
+      paginas: Math.ceil(total/limit),
+      paginaActual: Number(paginaActual),
+      total,
+      offset,
+      limit
+    })
+    
+  } catch (error) {
+    console.log(error)
+  }
+
 }
 
 // formulario para crear una nueva propiedad

@@ -12,6 +12,10 @@ const formularioLogin = (req, res) => {
   })
 }
 
+const cerrarSesion = async(req, res) => {
+  return res.clearCookie('_token').status(200).redirect('/auth/login')
+}
+
 const autenticar = async(req, res) => {
   // validación
   await check('email').isEmail().withMessage('El email es obligatorio').run(req)
@@ -268,6 +272,7 @@ const nuevoPassword = async(req, res) => {
 
 export {
   formularioLogin,
+  cerrarSesion,
   autenticar,
   formularioRegistro,
   registrar,
